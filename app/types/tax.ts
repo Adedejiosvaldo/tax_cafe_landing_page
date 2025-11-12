@@ -35,6 +35,15 @@ export interface TaxBand {
   tax: number;
 }
 
+export interface DeductionDetail {
+  name: string;
+  amount: number;
+  originalAmount?: number;
+  limit?: number;
+  calculation?: string;
+  description: string;
+}
+
 export interface TaxCalculationResult {
   totalIncome: number;
   adjustedBusinessIncome: number;
@@ -56,4 +65,5 @@ export interface TaxCalculationResult {
     dependentRelief: number;
     consolidatedRelief: number;
   };
+  detailedDeductions?: DeductionDetail[];
 }

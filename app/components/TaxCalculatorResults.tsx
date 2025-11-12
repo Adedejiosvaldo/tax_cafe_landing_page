@@ -131,81 +131,74 @@ export function TaxCalculatorResults({
 
           <Separator />
 
-          {/* Deduction Breakdown */}
+          {/* Detailed Deduction Breakdown */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Deduction Breakdown</h3>
+            <h3 className="text-lg font-semibold mb-3">Detailed Deduction Breakdown</h3>
             <p className="text-sm text-text-light-body mb-4">
-              Details of all eligible deductions
+              Complete breakdown of all eligible deductions with calculations
             </p>
-            <div className="space-y-3">
-              {results.deductionDetails.lifeInsurance > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">Life Insurance</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.lifeInsurance)}
+            <div className="space-y-4">
+              {results.detailedDeductions && results.detailedDeductions.length > 0 ? (
+                results.detailedDeductions.map((deduction, index) => (
+                  <div
+                    key={index}
+                    className="rounded-lg border border-border-light bg-background-light p-4 space-y-2"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900 mb-1">
+                          {deduction.name}
+                        </h4>
+                        <p className="text-sm text-text-light-body mb-2">
+                          {deduction.description}
+                        </p>
+                        {deduction.calculation && (
+                          <div className="bg-white rounded border border-border-light p-2 mt-2">
+                            <p className="text-xs font-medium text-gray-700 mb-1">
+                              Calculation:
+                            </p>
+                            <p className="text-sm text-gray-900 font-mono">
+                              {deduction.calculation}
+                            </p>
+                          </div>
+                        )}
+                        {deduction.originalAmount !== undefined &&
+                          deduction.originalAmount !== deduction.amount && (
+                            <p className="text-xs text-text-light-body mt-2">
+                              Original amount: {formatCurrency(deduction.originalAmount)} →
+                              Limited to: {formatCurrency(deduction.amount)}
+                            </p>
+                          )}
+                      </div>
+                      <div className="text-right ml-4">
+                        <p className="text-lg font-bold text-primary">
+                          {formatCurrency(deduction.amount)}
+                        </p>
+                        {deduction.limit && deduction.limit !== deduction.amount && (
+                          <p className="text-xs text-text-light-body mt-1">
+                            Limit: {formatCurrency(deduction.limit)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-text-light-body text-center py-4">
+                  No deductions available
+                </p>
+              )}
+
+              {/* Total Deductions Summary */}
+              <div className="rounded-lg border-2 border-primary bg-primary/5 p-4 mt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-gray-900">
+                    Total Deductions
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    {formatCurrency(results.totalDeductions)}
                   </span>
                 </div>
-              )}
-              {results.deductionDetails.rentRelief > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">Rent Relief</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.rentRelief)}
-                  </span>
-                </div>
-              )}
-              {results.deductionDetails.pension > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">Pension Contribution</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.pension)}
-                  </span>
-                </div>
-              )}
-              {results.deductionDetails.nhf > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">NHF Contribution</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.nhf)}
-                  </span>
-                </div>
-              )}
-              {results.deductionDetails.nhis > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">NHIS Contribution</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.nhis)}
-                  </span>
-                </div>
-              )}
-              {results.deductionDetails.loanInterest > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">Loan Interest</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.loanInterest)}
-                  </span>
-                </div>
-              )}
-              {results.deductionDetails.donations > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">Donations</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.donations)}
-                  </span>
-                </div>
-              )}
-              {results.deductionDetails.dependentRelief > 0 && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-text-light-body">Dependent Relief</span>
-                  <span className="font-medium">
-                    {formatCurrency(results.deductionDetails.dependentRelief)}
-                  </span>
-                </div>
-              )}
-              <Separator className="my-2" />
-              <div className="flex justify-between items-center py-2 font-semibold">
-                <span>Consolidated Relief</span>
-                <span>{formatCurrency(results.deductionDetails.consolidatedRelief)}</span>
               </div>
             </div>
           </div>

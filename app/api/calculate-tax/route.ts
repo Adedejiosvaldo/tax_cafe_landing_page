@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TaxInput, TaxCalculationResult, TaxBand } from "@/app/types/tax";
+import {
+  TaxInput,
+  TaxCalculationResult,
+  TaxBand,
+  DeductionDetail,
+} from "@/app/types/tax";
 
 export async function POST(request: NextRequest) {
   try {
     const data: TaxInput = await request.json();
 
-    // Step 1: Calculate Gross Income
-    const grossIncome =
-      data.employmentIncome +
-      data.freelanceIncome +
-      data.digitalIncome +
-      data.rentalIncome +
-      data.investmentIncome +
-      data.capitalGains;
+    // Step 1: Calculate Gross Income (for reference, though CRA no longer uses it)
+    // Note: Gross income is calculated but CRA has been phased out
 
     // Step 2: Apply business expense deductions (for self-employed)
     let adjustedBusinessIncome = data.freelanceIncome;
@@ -28,7 +27,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 3: Adjust for digital income losses
-    const netDigitalIncome = Math.max(0, data.digitalIncome - data.lossesDigital);
+    const netDigitalIncome = Math.max(
+      0,
+      data.digitalIncome - data.lossesDigital
+    );
 
     // Step 4: Calculate Total Income
     const totalIncome =
@@ -67,10 +69,8 @@ export async function POST(request: NextRequest) {
     // Dependent Relief: ₦2,500 per dependent (max 4)
     const dependentRelief = Math.min(data.dependents, 4) * 2500;
 
-    // Consolidated Relief: 20% of Gross Income + ₦200,000 (whichever is higher)
-    const consolidatedRelief = Math.max(totalIncome * 0.2, 200000);
-
-    // Total Deductions
+    // Note: Consolidated Relief Allowance (CRA) has been phased out and replaced by Rent Relief
+    // Total Deductions (CRA no longer applies)
     const totalDeductions =
       pension +
       nhf +
@@ -79,8 +79,7 @@ export async function POST(request: NextRequest) {
       rentRelief +
       loanInterest +
       donations +
-      dependentRelief +
-      consolidatedRelief;
+      dependentRelief;
 
     // Step 6: Calculate Taxable Income
     const taxableIncome = Math.max(0, totalIncome - totalDeductions);
@@ -153,6 +152,145 @@ export async function POST(request: NextRequest) {
     // Calculate savings from deductions
     const savingsFromDeductions = totalDeductions;
 
+    // Build detailed deductions list
+    const detailedDeductions: DeductionDetail[] = [];
+
+    if (pension > 0) {
+      detailedDeductions.push({
+        name: "Pension Contribution",
+        amount: pension,
+        originalAmount: data.pensionContrib,
+        limit: pensionLimit,
+        calculation:
+          pensionLimit < data.pensionContrib
+            ? `Limited to 8% of employment income (₦${formatNumber(
+                pensionLimit
+              )})`
+            : `8% of employment income: ₦${formatNumber(
+                data.employmentIncome
+              )} × 8% = ₦${formatNumber(pensionLimit)}`,
+        description:
+          "Contributions under the Pension Reform Act. Maximum deductible is 8% of your employment income.",
+      });
+    }
+
+    if (nhf > 0) {
+      detailedDeductions.push({
+        name: "National Housing Fund (NHF)",
+        amount: nhf,
+        originalAmount: data.nhfContrib,
+        limit: nhfLimit,
+        calculation:
+          nhfLimit < data.nhfContrib
+            ? `Limited to 2.5% of employment income (₦${formatNumber(
+                nhfLimit
+              )})`
+            : `2.5% of employment income: ₦${formatNumber(
+                data.employmentIncome
+              )} × 2.5% = ₦${formatNumber(nhfLimit)}`,
+        description:
+          "National Housing Fund contributions. Typically 2.5% of basic salary.",
+      });
+    }
+
+    if (nhis > 0) {
+      detailedDeductions.push({
+        name: "National Health Insurance Scheme (NHIS)",
+        amount: nhis,
+        originalAmount: data.nhisContrib,
+        calculation: `Actual contribution: ₦${formatNumber(data.nhisContrib)}`,
+        description:
+          "Your annual NHIS premium payments for health insurance coverage.",
+      });
+    }
+
+    if (lifeInsurance > 0) {
+      detailedDeductions.push({
+        name: "Life Insurance / Annuity Premium",
+        amount: lifeInsurance,
+        originalAmount: data.lifeInsurance,
+        calculation: `Actual premium paid: ₦${formatNumber(
+          data.lifeInsurance
+        )}`,
+        description:
+          "Annual premiums paid for life insurance policies or annuity plans for yourself or your spouse.",
+      });
+    }
+
+    // Rent Relief: Replaces the old Consolidated Relief Allowance (CRA)
+    // Show rent relief if rent was paid (even if 0, to show it's available)
+    if (data.rentPaid > 0) {
+      const rentReliefCalc = data.rentPaid * 0.2;
+      detailedDeductions.push({
+        name: "Rent Relief",
+        amount: rentRelief,
+        originalAmount: data.rentPaid,
+        limit: 500000,
+        calculation:
+          rentReliefCalc > 500000
+            ? `20% of rent (₦${formatNumber(
+                rentReliefCalc
+              )}) capped at ₦500,000 maximum`
+            : `20% of rent paid: ₦${formatNumber(
+                data.rentPaid
+              )} × 20% = ₦${formatNumber(rentRelief)}`,
+        description:
+          "Rent relief replaces the previous Consolidated Relief Allowance (CRA). You can claim 20% of your annual rent paid, subject to a maximum of ₦500,000 (whichever is lower). Documentary evidence such as lease agreements or payment receipts is required.",
+      });
+    }
+
+    if (loanInterest > 0) {
+      detailedDeductions.push({
+        name: "Loan Interest (Home Ownership)",
+        amount: loanInterest,
+        originalAmount: data.loanInterest,
+        calculation: `Actual interest paid: ₦${formatNumber(
+          data.loanInterest
+        )}`,
+        description:
+          "Interest paid on loans used to develop or purchase your owner-occupied residential house.",
+      });
+    }
+
+    if (donations > 0) {
+      detailedDeductions.push({
+        name: "Charitable Donations",
+        amount: donations,
+        originalAmount: data.donations,
+        limit: donationsLimit,
+        calculation:
+          donationsLimit < data.donations
+            ? `Limited to 10% of total income (₦${formatNumber(
+                donationsLimit
+              )})`
+            : `10% of total income: ₦${formatNumber(
+                totalIncome
+              )} × 10% = ₦${formatNumber(donationsLimit)}`,
+        description:
+          "Donations to approved NGOs or charitable organizations. Maximum deductible is 10% of your total income.",
+      });
+    }
+
+    if (dependentRelief > 0) {
+      const dependentsCount = Math.min(data.dependents, 4);
+      detailedDeductions.push({
+        name: "Dependent Relief",
+        amount: dependentRelief,
+        originalAmount: data.dependents,
+        limit: 4,
+        calculation: `${dependentsCount} dependent${
+          dependentsCount > 1 ? "s" : ""
+        } × ₦2,500 = ₦${formatNumber(dependentRelief)}${
+          data.dependents > 4 ? ` (capped at 4 dependents)` : ""
+        }`,
+        description:
+          "Relief for dependents you support financially. ₦2,500 per dependent, maximum 4 dependents (₦10,000 total).",
+      });
+    }
+
+    // Note: Consolidated Relief Allowance (CRA) has been phased out
+    // It has been replaced by the new Rent Relief system
+
     const result: TaxCalculationResult = {
       totalIncome,
       adjustedBusinessIncome,
@@ -172,8 +310,9 @@ export async function POST(request: NextRequest) {
         loanInterest,
         donations,
         dependentRelief,
-        consolidatedRelief,
+        consolidatedRelief: 0, // CRA has been phased out, kept for backward compatibility
       },
+      detailedDeductions,
     };
 
     return NextResponse.json(result);
