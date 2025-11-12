@@ -9,7 +9,6 @@ import { TaxCalculatorResults } from "@/app/components/TaxCalculatorResults";
 import { TaxSnapshot } from "@/app/components/TaxSnapshot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -25,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -66,6 +64,7 @@ export default function TaxCalculatorPage() {
   const [results, setResults] = useState<TaxCalculationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const form = useForm<TaxFormValues>({
     resolver: zodResolver(taxFormSchema),
@@ -134,8 +133,10 @@ export default function TaxCalculatorPage() {
 
       const result = await response.json();
       setResults(result);
+      setModalOpen(true); // Open modal when results are ready
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
+      setModalOpen(true); // Open modal to show error
     } finally {
       setLoading(false);
     }
@@ -275,9 +276,9 @@ export default function TaxCalculatorPage() {
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            Select your primary employment status. Choose "Both"
-                            if you have both employment income and
-                            freelance/business income.
+                            Select your primary employment status. Choose
+                            &quot;Both&quot; if you have both employment income
+                            and freelance/business income.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -777,6 +778,7 @@ export default function TaxCalculatorPage() {
                       form.reset();
                       setResults(null);
                       setError(null);
+                      setModalOpen(false);
                     }}
                   >
                     Reset
@@ -792,16 +794,14 @@ export default function TaxCalculatorPage() {
           </div>
         </div>
 
-        {/* Full Results - Shown after explicit calculation */}
-        {(results || error) && (
-          <div className="mt-8">
-            <TaxCalculatorResults
-              results={results}
-              loading={loading}
-              error={error}
-            />
-          </div>
-        )}
+        {/* Results Modal */}
+        <TaxCalculatorResults
+          results={results}
+          loading={loading}
+          error={error}
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+        />
       </main>
     </div>
   );
