@@ -60,7 +60,8 @@ body {
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  /* Keep custom primary color (green) instead of shadcn default */
+  --color-primary: #0d5f3a;
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -95,7 +96,8 @@ body {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  /* Use custom green primary color instead of default black */
+  --primary: #0d5f3a;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -162,5 +164,27 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Ensure custom text color utilities are available */
+  .text-text-light-body {
+    color: var(--color-text-light-body);
+  }
+  .text-text-dark-body {
+    color: var(--color-text-dark-body);
+  }
+  .bg-background-light {
+    background-color: var(--color-background-light);
+  }
+  .bg-background-dark {
+    background-color: var(--color-background-dark);
+  }
+  .border-border-light {
+    border-color: var(--color-border-light);
+  }
+  .border-border-dark {
+    border-color: var(--color-border-dark);
   }
 }
