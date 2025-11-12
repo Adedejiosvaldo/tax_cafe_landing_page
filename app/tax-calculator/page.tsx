@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import Image from "next/image";
+import { FormattedNumberInput } from "@/app/components/FormattedNumberInput";
 
 const taxFormSchema = z.object({
   employmentType: z.enum(["employee", "self-employed", "freelancer", "both"]),
@@ -239,7 +240,9 @@ export default function TaxCalculatorPage() {
                   <CardHeader>
                     <CardTitle>Personal Information</CardTitle>
                     <CardDescription>
-                      Tell us about your employment status and residency
+                      Start by telling us about your employment status and
+                      residency. This helps us determine which income sources
+                      and deductions apply to you.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -271,6 +274,11 @@ export default function TaxCalculatorPage() {
                               </SelectItem>
                             </SelectContent>
                           </Select>
+                          <FormDescription>
+                            Select your primary employment status. Choose "Both"
+                            if you have both employment income and
+                            freelance/business income.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -290,8 +298,10 @@ export default function TaxCalculatorPage() {
                           <div className="space-y-1 leading-none">
                             <FormLabel>Nigerian Resident</FormLabel>
                             <FormDescription>
-                              Check if you are a resident of Nigeria for tax
-                              purposes
+                              Check this box if you are a resident of Nigeria
+                              for tax purposes. Residents are taxed on worldwide
+                              income, while non-residents are only taxed on
+                              Nigerian-source income.
                             </FormDescription>
                           </div>
                         </FormItem>
@@ -305,7 +315,9 @@ export default function TaxCalculatorPage() {
                   <CardHeader>
                     <CardTitle>Income Sources</CardTitle>
                     <CardDescription>
-                      Enter your annual income from all sources (₦)
+                      Enter your annual income from all sources. You can type
+                      numbers with commas (e.g., 300,000). Include all income
+                      you received in the tax year.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -318,15 +330,17 @@ export default function TaxCalculatorPage() {
                             Employment Income (Salary/Wages)
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Your total annual salary, wages, or employment
+                            income before deductions. Include bonuses,
+                            allowances, and other employment-related income.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -342,17 +356,17 @@ export default function TaxCalculatorPage() {
                           <FormItem>
                             <FormLabel>Freelance/Business Income</FormLabel>
                             <FormControl>
-                              <Input
-                                type="number"
+                              <FormattedNumberInput
+                                value={field.value}
+                                onValueChange={field.onChange}
                                 placeholder="0"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
                               />
                             </FormControl>
+                            <FormDescription>
+                              Total income from freelance work, consulting, or
+                              your business operations. This is your gross
+                              business income before expenses.
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -368,15 +382,17 @@ export default function TaxCalculatorPage() {
                             Digital Assets Income (Crypto, NFT, etc.)
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Profits from selling cryptocurrency, NFTs, or other
+                            digital assets. Only include gains/profits here
+                            (losses are entered separately below).
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -389,15 +405,16 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Rental Income</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Total annual rent received from properties you own
+                            and rent out to others.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -412,15 +429,16 @@ export default function TaxCalculatorPage() {
                             Investment Income (Dividends, Interest, Royalties)
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Income from dividends, bank interest, royalties, or
+                            other investment returns.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -433,15 +451,17 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Capital Gains</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Profit from selling assets like stocks, bonds, or
+                            property. This is the gain (sale price minus
+                            purchase price).
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -457,8 +477,10 @@ export default function TaxCalculatorPage() {
                     <CardHeader>
                       <CardTitle>Business Expenses</CardTitle>
                       <CardDescription>
-                        Deductible business expenses for
-                        self-employed/freelancers
+                        Deductible business expenses reduce your taxable
+                        business income. Include costs like office supplies,
+                        equipment, professional fees, and other legitimate
+                        business-related expenses.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -469,20 +491,18 @@ export default function TaxCalculatorPage() {
                           <FormItem>
                             <FormLabel>Total Business Expenses</FormLabel>
                             <FormControl>
-                              <Input
-                                type="number"
+                              <FormattedNumberInput
+                                value={field.value}
+                                onValueChange={field.onChange}
                                 placeholder="0"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
                               />
                             </FormControl>
                             <FormDescription>
-                              Legitimate business expenses related to your
-                              freelance/self-employed income
+                              Sum of all legitimate business expenses related to
+                              your freelance/self-employed income. Examples:
+                              office rent, internet, software subscriptions,
+                              professional services, equipment, and other
+                              business-related costs.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -497,7 +517,9 @@ export default function TaxCalculatorPage() {
                   <CardHeader>
                     <CardTitle>Digital Asset Losses</CardTitle>
                     <CardDescription>
-                      Losses from crypto, NFT, or other digital asset trading
+                      If you sold digital assets (crypto, NFTs) at a loss, enter
+                      those losses here. These can only offset digital asset
+                      profits, not other income.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -508,18 +530,16 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Digital Asset Losses</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            Losses can only be deducted from digital asset
-                            profits
+                            Total losses from selling cryptocurrency, NFTs, or
+                            other digital assets. Losses can only be deducted
+                            from digital asset profits entered above.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -533,7 +553,9 @@ export default function TaxCalculatorPage() {
                   <CardHeader>
                     <CardTitle>Statutory Deductions & Reliefs</CardTitle>
                     <CardDescription>
-                      Eligible deductions under Nigeria Tax Act 2025
+                      These deductions reduce your taxable income. Enter the
+                      actual amounts you paid during the tax year. The system
+                      will automatically apply the legal limits.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -544,17 +566,16 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Pension Contribution</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            Maximum 8% of employment income
+                            Your annual pension contributions under the Pension
+                            Reform Act. Maximum deductible is 8% of your
+                            employment income.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -570,17 +591,16 @@ export default function TaxCalculatorPage() {
                             National Housing Fund (NHF) Contribution
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            Typically 2.5% of basic salary
+                            Your annual NHF contributions. Typically 2.5% of
+                            your basic salary, but enter the actual amount you
+                            contributed.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -596,15 +616,16 @@ export default function TaxCalculatorPage() {
                             National Health Insurance Scheme (NHIS) Contribution
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Your annual NHIS premium payments for health
+                            insurance coverage.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -619,15 +640,16 @@ export default function TaxCalculatorPage() {
                             Life Insurance or Annuity Premium
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
+                          <FormDescription>
+                            Annual premiums paid for life insurance policies or
+                            annuity plans for yourself or your spouse.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -640,17 +662,16 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Rent Paid (Primary Residence)</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            20% of rent paid or ₦500,000 maximum
+                            Total annual rent you paid for your primary
+                            residence. You can claim 20% of this amount or
+                            ₦500,000 maximum, whichever is lower.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -664,18 +685,16 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Loan Interest (Home Ownership)</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            Interest on loans for developing owner-occupied
-                            residential house
+                            Interest paid on loans used to develop or purchase
+                            your owner-occupied residential house. This must be
+                            for your primary residence.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -689,18 +708,17 @@ export default function TaxCalculatorPage() {
                         <FormItem>
                           <FormLabel>Charitable Donations</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
+                            <FormattedNumberInput
+                              value={field.value}
+                              onValueChange={field.onChange}
                               placeholder="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            Maximum 10% of total income (must be to approved
-                            NGOs)
+                            Donations made to approved NGOs or charitable
+                            organizations. Maximum deductible is 10% of your
+                            total income, and donations must be to registered,
+                            approved organizations.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -724,7 +742,10 @@ export default function TaxCalculatorPage() {
                             />
                           </FormControl>
                           <FormDescription>
-                            ₦2,500 per dependent (maximum 4 dependents)
+                            Number of dependents you support financially
+                            (children, elderly parents, etc.). You can claim
+                            ₦2,500 per dependent, with a maximum of 4 dependents
+                            (₦10,000 total).
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -732,6 +753,11 @@ export default function TaxCalculatorPage() {
                     />
                   </CardContent>
                 </Card>
+
+                {/* Mobile Snapshot - Shown before submit button on mobile */}
+                <div className="lg:hidden">
+                  <TaxSnapshot formData={snapshotData} />
+                </div>
 
                 {/* Submit Button */}
                 <div className="flex gap-4">
