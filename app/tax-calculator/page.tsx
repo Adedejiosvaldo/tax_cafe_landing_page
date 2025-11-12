@@ -145,6 +145,19 @@ export default function TaxCalculatorPage() {
   const employmentType = form.watch("employmentType");
   const formValues = form.watch();
 
+  // Check if any meaningful input has been entered
+  const hasInput = () => {
+    const incomeFields = [
+      formValues.employmentIncome,
+      formValues.freelanceIncome,
+      formValues.digitalIncome,
+      formValues.rentalIncome,
+      formValues.investmentIncome,
+      formValues.capitalGains,
+    ];
+    return incomeFields.some((value) => value > 0);
+  };
+
   // Convert form values to TaxInput for real-time snapshot
   const snapshotData: TaxInput = {
     employmentType: formValues.employmentType,
@@ -766,7 +779,7 @@ export default function TaxCalculatorPage() {
                     type="submit"
                     size="lg"
                     className="flex-1 bg-primary hover:bg-primary/90"
-                    disabled={loading}
+                    disabled={loading || !hasInput()}
                   >
                     {loading ? "Calculating..." : "Calculate Tax"}
                   </Button>
