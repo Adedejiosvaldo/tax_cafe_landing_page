@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import MarkdownRenderer from "@/components/ui/MarkdownRenderer";
+import MarkdownRenderer from "@/app/components/ui/MarkdownRenderer";
 import { TaxInput } from "@/app/types/tax";
 import { Send, Loader2 } from "lucide-react";
 import useTaxAIStreamHandler from "@/app/hooks/useTaxAIStreamHandler";

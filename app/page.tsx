@@ -42,7 +42,7 @@ export default function Home() {
               <nav className="hidden md:flex items-center gap-8">
                 <Link
                   className="text-gray-600 hover:text-primary text-sm font-medium transition-colors relative group"
-                  href="#features"
+                  href="/tax-ai"
                 >
                   Tax AI
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
